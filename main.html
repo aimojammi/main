@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة مهام الصيانة والدعم الفني</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap');
+        
+        * {
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        body {
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #B8860B 0%, #556B2F 50%, #2F4F4F 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(184, 134, 11, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(85, 107, 47, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(47, 79, 79, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+        }
+
+        .gold-gradient {
+            background: linear-gradient(135deg, #B8860B 0%, #DAA520 100%);
+        }
+
+        .olive-gradient {
+            background: linear-gradient(135deg, #556B2F 0%, #6B8E23 100%);
+        }
+
+        .dark-slate-gradient {
+            background: linear-gradient(135deg, #2F4F4F 0%, #708090 100%);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #B8860B 0%, #DAA520 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(184, 134, 11, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #DAA520 0%, #B8860B 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(184, 134, 11, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #556B2F 0%, #6B8E23 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(85, 107, 47, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #6B8E23 0%, #556B2F 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(85, 107, 47, 0.4);
+        }
+
+        .form-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(184, 134, 11, 0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #B8860B;
+            box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.2);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .status-ready {
+            background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+            color: white;
+        }
+
+        .status-waiting {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            color: white;
+        }
+
+        .status-contact {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            color: white;
+        }
+
+        .task-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-left: 6px solid #B8860B;
+            transition: all 0.3s ease;
+        }
+
+        .task-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .signature-canvas {
+            border: 2px dashed #B8860B;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            cursor: crosshair;
+        }
+
+        .nav-tab {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-left: 4px;
+        }
+
+        .nav-tab.active {
+            background: rgba(255, 255, 255, 0.95);
+            color: #2F4F4F;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .print-area {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .print-area, .print-area * {
+                visibility: visible;
+            }
+            .print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                box-shadow: none;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .location-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .location-B { background: #FF6B6B; color: white; }
+        .location-G { background: #4ECDC4; color: white; }
+        .location-M { background: #45B7D1; color: white; }
+        .location-P { background: #96CEB4; color: white; }
+        .location-E { background: #FFEAA7; color: #2d3436; }
+        .location-K { background: #DDA0DD; color: white; }
+        .location-T { background: #98D8C8; color: white; }
+        .location-R { background: #F7DC6F; color: #2d3436; }
+
+        .user-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-left: 6px solid #556B2F;
+            transition: all 0.3s ease;
+        }
+
+        .user-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .priority-high {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            color: white;
+        }
+
+        .priority-medium {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            color: white;
+        }
+
+        .priority-low {
+            background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+            color: white;
+        }
+
+        .assignment-task-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #B8860B;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .assignment-task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .assignment-task-card.selected {
+            border-left-color: #556B2F;
+            background: rgba(85, 107, 47, 0.1);
+        }
+
+        .specialization-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 2px;
+            background: linear-gradient(135deg, #B8860B 0%, #DAA520 100%);
+            color: white;
+        }
+
+        .department-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .dept-maintenance { background: #3B82F6; color: white; }
+        .dept-technical-support { background: #10B981; color: white; }
+        .dept-network { background: #8B5CF6; color: white; }
+        .dept-systems { background: #F59E0B; color: white; }
+        .dept-admin { background: #EF4444; color: white; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="glass-effect text-white shadow-2xl mb-8">
+        <div class="container mx-auto px-6 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <h1 class="text-3xl font-bold">نظام إدارة مهام الصيانة والدعم الفني</h1>
+                    <div class="gold-gradient px-4 py-2 rounded-full text-sm font-semibold">
+                        قسم تقنية المعلومات
+                    </div>
+                </div>
+                <div class="text-lg font-medium" id="current-time"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="container mx-auto px-6 mb-8">
+        <div class="flex">
+            <button class="nav-tab active" onclick="showSection('reception')">
+                📥 شاشة الاستقبال
+            </button>
+            <button class="nav-tab" onclick="showSection('execution')">
+                ⚙️ شاشة التنفيذ
+            </button>
+            <button class="nav-tab" onclick="showSection('completed')">
+                ✅ المهام المنتهية
+            </button>
+            <button class="nav-tab" onclick="showSection('reports')">
+                📊 التقارير
+            </button>
+            <button class="nav-tab" onclick="showSection('users')">
+                👥 إدارة المستخدمين
+            </button>
+            <button class="nav-tab" onclick="showSection('assignment')">
+                📋 تخصيص المهام
+            </button>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-6">
+        <!-- Reception Section -->
+        <section id="reception-section" class="section">
+            <div class="glass-effect p-8 rounded-2xl">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                    <span class="text-3xl ml-3">📥</span>
+                    شاشة الاستقبال - تسجيل المهام الجديدة
+                </h2>
+
+                <form id="reception-form" class="space-y-6">
+                    <!-- Device Information -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">نوع الجهاز</label>
+                            <select id="device-type" class="form-input" required>
+                                <option value="">اختر نوع الجهاز</option>
+                                <option value="computer">حاسب آلي</option>
+                                <option value="printer">طابعة</option>
+                                <option value="scanner">ماسح ضوئي</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">نوع الاستخدام</label>
+                            <select id="usage-type" class="form-input" required>
+                                <option value="">اختر نوع الاستخدام</option>
+                                <option value="private">خاص</option>
+                                <option value="lab">معمل</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">الطراز</label>
+                            <input type="text" id="device-model" class="form-input" placeholder="أدخل طراز الجهاز" required>
+                        </div>
+                    </div>
+
+                    <!-- Technician Information -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">اسم الفني المستلم</label>
+                            <select id="receiving-technician" class="form-input" required>
+                                <option value="">اختر الفني المستلم</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">تاريخ ووقت الاستلام</label>
+                            <input type="datetime-local" id="receive-datetime" class="form-input" required>
+                        </div>
+                    </div>
+
+                    <!-- Technical Requirements -->
+                    <div class="glass-effect p-6 rounded-xl">
+                        <h3 class="text-xl font-bold text-white mb-4">المطلوب من الفني المنفذ</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-white font-semibold mb-2">نوع الفورمات</label>
+                                <select id="format-type" class="form-input">
+                                    <option value="">اختر نوع الفورمات</option>
+                                    <option value="full">فورمات كامل</option>
+                                    <option value="quick">فورمات سريع</option>
+                                    <option value="none">بدون فورمات</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-white font-semibold mb-2">اللغة المطلوبة</label>
+                                <select id="language" class="form-input">
+                                    <option value="">اختر اللغة</option>
+                                    <option value="arabic">عربي</option>
+                                    <option value="english">إنجليزي</option>
+                                    <option value="both">عربي + إنجليزي</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-white font-semibold mb-2">هل يوجد بيانات مهمة؟</label>
+                            <div class="flex space-x-4 space-x-reverse">
+                                <label class="flex items-center text-white">
+                                    <input type="radio" name="has-data" value="yes" class="ml-2">
+                                    نعم، يوجد بيانات
+                                </label>
+                                <label class="flex items-center text-white">
+                                    <input type="radio" name="has-data" value="no" class="ml-2">
+                                    لا، لا يوجد بيانات
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-white font-semibold mb-2">توقيع الفني المستلم</label>
+                            <div class="flex items-center space-x-4 space-x-reverse">
+                                <select id="technician-signature" class="form-input flex-1">
+                                    <option value="">اختر توقيع الفني</option>
+                                </select>
+                                <button type="button" onclick="openSignatureModal()" class="btn-secondary">
+                                    إضافة توقيع جديد
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Beneficiary Information -->
+                    <div class="glass-effect p-6 rounded-xl">
+                        <h3 class="text-xl font-bold text-white mb-4">بيانات المستفيد صاحب الجهاز</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-white font-semibold mb-2">اسم المستفيد</label>
+                                <input type="text" id="beneficiary-name" class="form-input" placeholder="أدخل اسم المستفيد" required>
+                            </div>
+                            <div>
+                                <label class="block text-white font-semibold mb-2">رقم المنسوب</label>
+                                <input type="text" id="employee-number" class="form-input" placeholder="أدخل رقم المنسوب" required>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <div>
+                                <label class="block text-white font-semibold mb-2">الإدارة أو الكلية</label>
+                                <input type="text" id="department" class="form-input" placeholder="أدخل الإدارة أو الكلية" required>
+                            </div>
+                            <div>
+                                <label class="block text-white font-semibold mb-2">رمز المقر</label>
+                                <select id="location-code" class="form-input" required>
+                                    <option value="">اختر رمز المقر</option>
+                                    <option value="B">B - المبنى الرئيسي</option>
+                                    <option value="G">G - المبنى الإداري</option>
+                                    <option value="M">M - المعامل</option>
+                                    <option value="P">P - مواقف السيارات</option>
+                                    <option value="E">E - كلية الهندسة</option>
+                                    <option value="K">K - كلية الطب</option>
+                                    <option value="T">T - كلية التقنية</option>
+                                    <option value="R">R - مركز الأبحاث</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-white font-semibold mb-2">رقم التواصل</label>
+                            <input type="tel" id="contact-number" class="form-input" placeholder="أدخل رقم التواصل" required>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex justify-center space-x-4 space-x-reverse mt-8">
+                        <button type="button" onclick="printReceptionForm()" class="btn-secondary">
+                            🖨️ طباعة النموذج
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            📤 إرسال إلى قسم التنفيذ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Execution Section -->
+        <section id="execution-section" class="section hidden">
+            <div class="glass-effect p-8 rounded-2xl">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                    <span class="text-3xl ml-3">⚙️</span>
+                    شاشة التنفيذ - المهام المطلوب تنفيذها
+                </h2>
+
+                <div id="pending-tasks" class="space-y-4 mb-8">
+                    <!-- Pending tasks will be populated here -->
+                </div>
+
+                <!-- Status Update Form -->
+                <div id="status-update-form" class="glass-effect p-6 rounded-xl hidden">
+                    <h3 class="text-xl font-bold text-white mb-4">تحديث حالة المهمة</h3>
+                    
+                    <form id="execution-form">
+                        <input type="hidden" id="task-id">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-white font-semibold mb-2">اسم الفني المنفذ</label>
+                                <select id="executing-technician" class="form-input" required>
+                                    <option value="">اختر الفني المنفذ</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-white font-semibold mb-2">تاريخ ووقت التنفيذ</label>
+                                <input type="datetime-local" id="execution-datetime" class="form-input" required>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-white font-semibold mb-2">حالة التنفيذ</label>
+                            <select id="execution-status" class="form-input" required onchange="toggleReasonField()">
+                                <option value="">اختر حالة التنفيذ</option>
+                                <option value="ready">جاهز</option>
+                                <option value="waiting">في الانتظار</option>
+                                <option value="contact">التواصل مع المستفيد</option>
+                            </select>
+                        </div>
+
+                        <div id="reason-field" class="mt-4 hidden">
+                            <label class="block text-white font-semibold mb-2">السبب</label>
+                            <textarea id="reason" class="form-input" rows="3" placeholder="أدخل السبب"></textarea>
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-white font-semibold mb-2">توقيع الفني المنفذ</label>
+                            <select id="execution-signature" class="form-input" required>
+                                <option value="">اختر توقيع الفني</option>
+                            </select>
+                        </div>
+
+                        <div class="flex justify-center space-x-4 space-x-reverse mt-6">
+                            <button type="button" onclick="cancelStatusUpdate()" class="btn-secondary">
+                                إلغاء
+                            </button>
+                            <button type="submit" class="btn-primary">
+                                📤 إرسال التحديث
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Completed Tasks Section -->
+        <section id="completed-section" class="section hidden">
+            <div class="glass-effect p-8 rounded-2xl">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                    <span class="text-3xl ml-3">✅</span>
+                    المهام المنتهية
+                </h2>
+
+                <div class="mb-6">
+                    <div class="flex space-x-4 space-x-reverse">
+                        <select id="status-filter" class="form-input max-w-xs" onchange="filterCompletedTasks()">
+                            <option value="">جميع الحالات</option>
+                            <option value="ready">جاهز</option>
+                            <option value="waiting">في الانتظار</option>
+                            <option value="contact">التواصل مع المستفيد</option>
+                        </select>
+                        <input type="date" id="date-filter" class="form-input max-w-xs" onchange="filterCompletedTasks()">
+                    </div>
+                </div>
+
+                <div id="completed-tasks" class="space-y-4">
+                    <!-- Completed tasks will be populated here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Users Management Section -->
+        <section id="users-section" class="section hidden">
+            <div class="glass-effect p-8 rounded-2xl">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                    <span class="text-3xl ml-3">👥</span>
+                    إدارة المستخدمين والفنيين
+                </h2>
+
+                <!-- Add New User Form -->
+                <div class="glass-effect p-6 rounded-xl mb-8">
+                    <h3 class="text-xl font-bold text-white mb-4">إضافة مستخدم جديد</h3>
+                    
+                    <form id="user-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block text-white font-semibold mb-2">اسم المستخدم</label>
+                                <input type="text" id="user-name" class="form-input" placeholder="أدخل اسم المستخدم" required>
+                            </div>
+                            <div>
+                                <label class="block text-white font-semibold mb-2">القسم</label>
+                                <select id="user-department" class="form-input" required>
+                                    <option value="">اختر القسم</option>
+                                    <option value="maintenance">الصيانة</option>
+                                    <option value="technical-support">الدعم الفني</option>
+                                    <option value="network">الشبكات</option>
+                                    <option value="systems">الأنظمة</option>
+                                    <option value="admin">الإدارة</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-white font-semibold mb-2">المنصب</label>
+                                <select id="user-position" class="form-input" required>
+                                    <option value="">اختر المنصب</option>
+                                    <option value="technician">فني</option>
+                                    <option value="senior-technician">فني أول</option>
+                                    <option value="supervisor">مشرف</option>
+                                    <option value="manager">مدير</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-white font-semibold mb-2">رقم الهاتف</label>
+                                <input type="tel" id="user-phone" class="form-input" placeholder="أدخل رقم الهاتف" required>
+                            </div>
+                            <div>
+                                <label class="block text-white font-semibold mb-2">البريد الإلكتروني</label>
+                                <input type="email" id="user-email" class="form-input" placeholder="أدخل البريد الإلكتروني">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-white font-semibold mb-2">التخصصات</label>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <label class="flex items-center text-white">
+                                    <input type="checkbox" name="specializations" value="hardware" class="ml-2">
+                                    صيانة الأجهزة
+                                </label>
+                                <label class="flex items-center text-white">
+                                    <input type="checkbox" name="specializations" value="software" class="ml-2">
+                                    البرمجيات
+                                </label>
+                                <label class="flex items-center text-white">
+                                    <input type="checkbox" name="specializations" value="network" class="ml-2">
+                                    الشبكات
+                                </label>
+                                <label class="flex items-center text-white">
+                                    <input type="checkbox" name="specializations" value="printers" class="ml-2">
+                                    الطابعات
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center">
+                            <button type="submit" class="btn-primary">
+                                ➕ إضافة المستخدم
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Users List -->
+                <div class="glass-effect p-6 rounded-xl">
+                    <h3 class="text-xl font-bold text-white mb-4">قائمة المستخدمين</h3>
+                    
+                    <div class="mb-4">
+                        <div class="flex space-x-4 space-x-reverse">
+                            <select id="department-filter" class="form-input max-w-xs" onchange="filterUsers()">
+                                <option value="">جميع الأقسام</option>
+                                <option value="maintenance">الصيانة</option>
+                                <option value="technical-support">الدعم الفني</option>
+                                <option value="network">الشبكات</option>
+                                <option value="systems">الأنظمة</option>
+                                <option value="admin">الإدارة</option>
+                            </select>
+                            <input type="text" id="search-users" class="form-input max-w-xs" placeholder="البحث عن مستخدم..." onkeyup="filterUsers()">
+                        </div>
+                    </div>
+
+                    <div id="users-list" class="space-y-4">
+                        <!-- Users will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Task Assignment Section -->
+        <section id="assignment-section" class="section hidden">
+            <div class="glass-effect p-8 rounded-2xl">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                    <span class="text-3xl ml-3">📋</span>
+                    تخصيص وإسناد المهام
+                </h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Task Details -->
+                    <div class="glass-effect p-6 rounded-xl">
+                        <h3 class="text-xl font-bold text-white mb-4">تفاصيل المهمة</h3>
+                        
+                        <div id="task-details-container">
+                            <div class="text-center py-12">
+                                <div class="text-6xl mb-4">📋</div>
+                                <h3 class="text-xl font-bold text-white mb-2">اختر مهمة للتخصيص</h3>
+                                <p class="text-white opacity-80">حدد مهمة من القائمة لعرض تفاصيلها</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Available Tasks -->
+                    <div class="glass-effect p-6 rounded-xl">
+                        <h3 class="text-xl font-bold text-white mb-4">المهام المتاحة للتخصيص</h3>
+                        
+                        <div class="mb-4">
+                            <select id="task-priority-filter" class="form-input" onchange="filterAssignmentTasks()">
+                                <option value="">جميع الأولويات</option>
+                                <option value="high">عالية</option>
+                                <option value="medium">متوسطة</option>
+                                <option value="low">منخفضة</option>
+                            </select>
+                        </div>
+
+                        <div id="assignment-tasks-list" class="space-y-4 max-h-96 overflow-y-auto">
+                            <!-- Tasks will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assignment Form -->
+                <div id="assignment-form-container" class="glass-effect p-6 rounded-xl mt-8 hidden">
+                    <h3 class="text-xl font-bold text-white mb-4">إسناد المهمة</h3>
+                    
+                    <form id="assignment-form">
+                        <input type="hidden" id="assign-task-id">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-white font-semibold mb-2">اختر الفني المختص</label>
+                                <select id="assigned-technician" class="form-input" required>
+                                    <option value="">اختر الفني</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-white font-semibold mb-2">أولوية المهمة</label>
+                                <select id="task-priority" class="form-input" required>
+                                    <option value="">اختر الأولوية</option>
+                                    <option value="high">عالية</option>
+                                    <option value="medium">متوسطة</option>
+                                    <option value="low">منخفضة</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <div>
+                                <label class="block text-white font-semibold mb-2">الموعد المتوقع للإنجاز</label>
+                                <input type="datetime-local" id="expected-completion" class="form-input" required>
+                            </div>
+                            <div>
+                                <label class="block text-white font-semibold mb-2">نوع الصيانة</label>
+                                <select id="maintenance-type" class="form-input" required>
+                                    <option value="">اختر نوع الصيانة</option>
+                                    <option value="preventive">صيانة وقائية</option>
+                                    <option value="corrective">صيانة إصلاحية</option>
+                                    <option value="emergency">صيانة طارئة</option>
+                                    <option value="upgrade">ترقية</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-white font-semibold mb-2">ملاحظات خاصة</label>
+                            <textarea id="assignment-notes" class="form-input" rows="3" placeholder="أدخل أي ملاحظات أو تعليمات خاصة للفني"></textarea>
+                        </div>
+
+                        <div class="flex justify-center space-x-4 space-x-reverse mt-6">
+                            <button type="button" onclick="cancelAssignment()" class="btn-secondary">
+                                إلغاء
+                            </button>
+                            <button type="submit" class="btn-primary">
+                                📤 إسناد المهمة
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reports Section -->
+        <section id="reports-section" class="section hidden">
+            <div class="glass-effect p-8 rounded-2xl">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                    <span class="text-3xl ml-3">📊</span>
+                    التقارير والإحصائيات
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="glass-effect p-6 rounded-xl text-center">
+                        <div class="text-3xl mb-2">📥</div>
+                        <div class="text-2xl font-bold text-white" id="total-received">0</div>
+                        <div class="text-white opacity-80">إجمالي المستلم</div>
+                    </div>
+                    <div class="glass-effect p-6 rounded-xl text-center">
+                        <div class="text-3xl mb-2">⚙️</div>
+                        <div class="text-2xl font-bold text-white" id="total-pending">0</div>
+                        <div class="text-white opacity-80">قيد التنفيذ</div>
+                    </div>
+                    <div class="glass-effect p-6 rounded-xl text-center">
+                        <div class="text-3xl mb-2">✅</div>
+                        <div class="text-2xl font-bold text-white" id="total-completed">0</div>
+                        <div class="text-white opacity-80">مكتمل</div>
+                    </div>
+                    <div class="glass-effect p-6 rounded-xl text-center">
+                        <div class="text-3xl mb-2">👥</div>
+                        <div class="text-2xl font-bold text-white" id="total-technicians">0</div>
+                        <div class="text-white opacity-80">الفنيين</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="glass-effect p-6 rounded-xl">
+                        <h3 class="text-xl font-bold text-white mb-4">توزيع الأجهزة</h3>
+                        <div id="device-distribution" class="space-y-3">
+                            <!-- Device distribution will be populated here -->
+                        </div>
+                    </div>
+                    <div class="glass-effect p-6 rounded-xl">
+                        <h3 class="text-xl font-bold text-white mb-4">توزيع المقرات</h3>
+                        <div id="location-distribution" class="space-y-3">
+                            <!-- Location distribution will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Signature Modal -->
+    <div id="signature-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-2xl font-bold mb-4 text-center">إضافة توقيع جديد</h3>
+            
+            <div class="mb-4">
+                <label class="block font-semibold mb-2">اسم الفني</label>
+                <input type="text" id="signature-name" class="form-input" placeholder="أدخل اسم الفني">
+            </div>
+            
+            <div class="mb-4">
+                <label class="block font-semibold mb-2">التوقيع</label>
+                <canvas id="signature-canvas" class="signature-canvas w-full h-32"></canvas>
+            </div>
+            
+            <div class="flex justify-center space-x-4 space-x-reverse">
+                <button onclick="clearSignature()" class="btn-secondary">مسح</button>
+                <button onclick="saveSignature()" class="btn-primary">حفظ</button>
+                <button onclick="closeSignatureModal()" class="btn-secondary">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Area -->
+    <div id="print-area" class="print-area hidden">
+        <!-- Print content will be populated here -->
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <span id="notification-text"></span>
+    </div>
+
+    <script>
+        // Data Management System
+        const MaintenanceSystem = {
+            tasks: JSON.parse(localStorage.getItem('maintenance_tasks') || '[]'),
+            technicians: JSON.parse(localStorage.getItem('technicians') || '[]'),
+            signatures: JSON.parse(localStorage.getItem('signatures') || '{}'),
+            users: JSON.parse(localStorage.getItem('users') || '[]'),
+            
+            saveData() {
+                localStorage.setItem('maintenance_tasks', JSON.stringify(this.tasks));
+                localStorage.setItem('technicians', JSON.stringify(this.technicians));
+                localStorage.setItem('signatures', JSON.stringify(this.signatures));
+                localStorage.setItem('users', JSON.stringify(this.users));
+            },
+            
+            generateId() {
+                return Date.now().toString() + Math.random().toString(36).substr(2, 9);
+            },
+            
+            addTask(taskData) {
+                const task = {
+                    id: this.generateId(),
+                    ...taskData,
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                };
+                this.tasks.push(task);
+                this.saveData();
+                return task;
+            },
+            
+            updateTaskStatus(taskId, statusData) {
+                const taskIndex = this.tasks.findIndex(task => task.id === taskId);
+                if (taskIndex !== -1) {
+                    this.tasks[taskIndex] = {
+                        ...this.tasks[taskIndex],
+                        ...statusData,
+                        status: 'completed',
+                        completedAt: new Date().toISOString()
+                    };
+                    this.saveData();
+                    return this.tasks[taskIndex];
+                }
+                return null;
+            },
+            
+            getPendingTasks() {
+                return this.tasks.filter(task => task.status === 'pending');
+            },
+            
+            getCompletedTasks() {
+                return this.tasks.filter(task => task.status === 'completed');
+            },
+
+            addUser(userData) {
+                const user = {
+                    id: this.generateId(),
+                    ...userData,
+                    createdAt: new Date().toISOString()
+                };
+                this.users.push(user);
+                this.saveData();
+                return user;
+            },
+
+            updateUser(userId, userData) {
+                const userIndex = this.users.findIndex(user => user.id === userId);
+                if (userIndex !== -1) {
+                    this.users[userIndex] = {
+                        ...this.users[userIndex],
+                        ...userData,
+                        updatedAt: new Date().toISOString()
+                    };
+                    this.saveData();
+                    return this.users[userIndex];
+                }
+                return null;
+            },
+
+            deleteUser(userId) {
+                const userIndex = this.users.findIndex(user => user.id === userId);
+                if (userIndex !== -1) {
+                    this.users.splice(userIndex, 1);
+                    this.saveData();
+                    return true;
+                }
+                return false;
+            },
+
+            assignTask(taskId, assignmentData) {
+                const taskIndex = this.tasks.findIndex(task => task.id === taskId);
+                if (taskIndex !== -1) {
+                    this.tasks[taskIndex] = {
+                        ...this.tasks[taskIndex],
+                        ...assignmentData,
+                        status: 'assigned',
+                        assignedAt: new Date().toISOString()
+                    };
+                    this.saveData();
+                    return this.tasks[taskIndex];
+                }
+                return null;
+            },
+
+            getUnassignedTasks() {
+                return this.tasks.filter(task => task.status === 'pending');
+            },
+
+            getAssignedTasks() {
+                return this.tasks.filter(task => task.status === 'assigned');
+            }
+        };
+
+        // Initialize default technicians if empty
+        if (MaintenanceSystem.technicians.length === 0) {
+            MaintenanceSystem.technicians = [
+                { id: '1', name: 'أحمد محمد الأحمد', department: 'الصيانة' },
+                { id: '2', name: 'محمد سالم العتيبي', department: 'الدعم الفني' },
+                { id: '3', name: 'خالد عبدالله المطيري', department: 'الصيانة' },
+                { id: '4', name: 'سعد أحمد الزهراني', department: 'الدعم الفني' },
+                { id: '5', name: 'عبدالرحمن حسن القحطاني', department: 'الصيانة' }
+            ];
+            MaintenanceSystem.saveData();
+        }
+
+        // Signature Canvas Setup
+        let signatureCanvas, signatureCtx, isDrawing = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            updateTime();
+            setInterval(updateTime, 1000);
+            
+            // Set current datetime
+            document.getElementById('receive-datetime').value = new Date().toISOString().slice(0, 16);
+            document.getElementById('execution-datetime').value = new Date().toISOString().slice(0, 16);
+            
+            // Form handlers
+            document.getElementById('reception-form').addEventListener('submit', handleReceptionSubmit);
+            document.getElementById('execution-form').addEventListener('submit', handleExecutionSubmit);
+            document.getElementById('user-form').addEventListener('submit', handleUserSubmit);
+            document.getElementById('assignment-form').addEventListener('submit', handleAssignmentSubmit);
+            
+            setupSignatureCanvas();
+        });
+
+        function initializeApp() {
+            populateTechniciansDropdowns();
+            populateSignaturesDropdowns();
+            renderPendingTasks();
+            renderCompletedTasks();
+            renderUsersList();
+            renderAssignmentTasks();
+            updateReports();
+        }
+
+        function updateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            const timeString = now.toLocaleDateString('ar-SA', options);
+            document.getElementById('current-time').textContent = timeString;
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update section-specific data
+            if (sectionName === 'execution') {
+                renderPendingTasks();
+            } else if (sectionName === 'completed') {
+                renderCompletedTasks();
+            } else if (sectionName === 'reports') {
+                updateReports();
+            } else if (sectionName === 'users') {
+                renderUsersList();
+            } else if (sectionName === 'assignment') {
+                renderAssignmentTasks();
+                populateAssignmentTechnicians();
+            }
+        }
+
+        function populateTechniciansDropdowns() {
+            const dropdowns = ['receiving-technician', 'executing-technician'];
+            dropdowns.forEach(dropdownId => {
+                const dropdown = document.getElementById(dropdownId);
+                dropdown.innerHTML = '<option value="">اختر الفني</option>' +
+                    MaintenanceSystem.technicians.map(tech => 
+                        `<option value="${tech.id}">${tech.name} - ${tech.department}</option>`
+                    ).join('');
+            });
+        }
+
+        function populateSignaturesDropdowns() {
+            const dropdowns = ['technician-signature', 'execution-signature'];
+            dropdowns.forEach(dropdownId => {
+                const dropdown = document.getElementById(dropdownId);
+                dropdown.innerHTML = '<option value="">اختر التوقيع</option>' +
+                    Object.keys(MaintenanceSystem.signatures).map(name => 
+                        `<option value="${name}">${name}</option>`
+                    ).join('');
+            });
+        }
+
+        function handleReceptionSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const hasDataRadio = document.querySelector('input[name="has-data"]:checked');
+            
+            const taskData = {
+                deviceType: document.getElementById('device-type').value,
+                usageType: document.getElementById('usage-type').value,
+                deviceModel: document.getElementById('device-model').value,
+                receivingTechnician: document.getElementById('receiving-technician').value,
+                receiveDateTime: document.getElementById('receive-datetime').value,
+                formatType: document.getElementById('format-type').value,
+                language: document.getElementById('language').value,
+                hasData: hasDataRadio ? hasDataRadio.value : '',
+                technicianSignature: document.getElementById('technician-signature').value,
+                beneficiaryName: document.getElementById('beneficiary-name').value,
+                employeeNumber: document.getElementById('employee-number').value,
+                department: document.getElementById('department').value,
+                locationCode: document.getElementById('location-code').value,
+                contactNumber: document.getElementById('contact-number').value
+            };
+            
+            const task = MaintenanceSystem.addTask(taskData);
+            
+            showNotification('تم إرسال المهمة إلى قسم التنفيذ بنجاح!');
+            e.target.reset();
+            document.getElementById('receive-datetime').value = new Date().toISOString().slice(0, 16);
+            
+            renderPendingTasks();
+            updateReports();
+        }
+
+        function renderPendingTasks() {
+            const container = document.getElementById('pending-tasks');
+            const pendingTasks = MaintenanceSystem.getPendingTasks();
+            
+            if (pendingTasks.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="text-6xl mb-4">📋</div>
+                        <h3 class="text-2xl font-bold text-white mb-2">لا توجد مهام قيد التنفيذ</h3>
+                        <p class="text-white opacity-80">جميع المهام مكتملة</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = pendingTasks.map(task => {
+                const technician = MaintenanceSystem.technicians.find(t => t.id === task.receivingTechnician);
+                return `
+                    <div class="task-card">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">
+                                    ${getDeviceTypeText(task.deviceType)} - ${task.deviceModel}
+                                </h3>
+                                <p class="text-gray-600">المستفيد: ${task.beneficiaryName} (${task.employeeNumber})</p>
+                                <p class="text-gray-600">القسم: ${task.department}</p>
+                            </div>
+                            <div class="text-left">
+                                <span class="location-badge location-${task.locationCode}">${task.locationCode}</span>
+                                <div class="text-sm text-gray-500 mt-2">
+                                    ${new Date(task.receiveDateTime).toLocaleString('ar-SA')}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-sm">
+                            <div>
+                                <span class="font-semibold">نوع الاستخدام:</span>
+                                <div>${getUsageTypeText(task.usageType)}</div>
+                            </div>
+                            <div>
+                                <span class="font-semibold">الفورمات:</span>
+                                <div>${getFormatTypeText(task.formatType)}</div>
+                            </div>
+                            <div>
+                                <span class="font-semibold">اللغة:</span>
+                                <div>${getLanguageText(task.language)}</div>
+                            </div>
+                            <div>
+                                <span class="font-semibold">البيانات:</span>
+                                <div>${task.hasData === 'yes' ? 'يوجد بيانات' : 'لا يوجد بيانات'}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <div class="text-sm text-gray-600">
+                                <span class="font-semibold">الفني المستلم:</span> ${technician ? technician.name : 'غير محدد'}
+                            </div>
+                            <div class="flex space-x-2 space-x-reverse">
+                                <button onclick="updateTaskStatus('${task.id}')" class="btn-primary">
+                                    تحديث الحالة
+                                </button>
+                                <button onclick="printTaskDetails('${task.id}')" class="btn-secondary">
+                                    طباعة
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateTaskStatus(taskId) {
+            document.getElementById('task-id').value = taskId;
+            document.getElementById('status-update-form').classList.remove('hidden');
+            document.getElementById('execution-datetime').value = new Date().toISOString().slice(0, 16);
+        }
+
+        function cancelStatusUpdate() {
+            document.getElementById('status-update-form').classList.add('hidden');
+            document.getElementById('execution-form').reset();
+        }
+
+        function toggleReasonField() {
+            const status = document.getElementById('execution-status').value;
+            const reasonField = document.getElementById('reason-field');
+            
+            if (status === 'waiting' || status === 'contact') {
+                reasonField.classList.remove('hidden');
+                document.getElementById('reason').required = true;
+            } else {
+                reasonField.classList.add('hidden');
+                document.getElementById('reason').required = false;
+            }
+        }
+
+        function handleExecutionSubmit(e) {
+            e.preventDefault();
+            
+            const taskId = document.getElementById('task-id').value;
+            const statusData = {
+                executingTechnician: document.getElementById('executing-technician').value,
+                executionDateTime: document.getElementById('execution-datetime').value,
+                executionStatus: document.getElementById('execution-status').value,
+                reason: document.getElementById('reason').value,
+                executionSignature: document.getElementById('execution-signature').value
+            };
+            
+            MaintenanceSystem.updateTaskStatus(taskId, statusData);
+            
+            showNotification('تم تحديث حالة المهمة بنجاح!');
+            
+            cancelStatusUpdate();
+            renderPendingTasks();
+            renderCompletedTasks();
+            updateReports();
+        }
+
+        function renderCompletedTasks() {
+            const container = document.getElementById('completed-tasks');
+            let completedTasks = MaintenanceSystem.getCompletedTasks();
+            
+            // Apply filters
+            const statusFilter = document.getElementById('status-filter').value;
+            const dateFilter = document.getElementById('date-filter').value;
+            
+            if (statusFilter) {
+                completedTasks = completedTasks.filter(task => task.executionStatus === statusFilter);
+            }
+            
+            if (dateFilter) {
+                completedTasks = completedTasks.filter(task => 
+                    task.executionDateTime.startsWith(dateFilter)
+                );
+            }
+            
+            if (completedTasks.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="text-6xl mb-4">✅</div>
+                        <h3 class="text-2xl font-bold text-white mb-2">لا توجد مهام مكتملة</h3>
+                        <p class="text-white opacity-80">لم يتم إكمال أي مهام بعد</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = completedTasks.map(task => {
+                const receivingTech = MaintenanceSystem.technicians.find(t => t.id === task.receivingTechnician);
+                const executingTech = MaintenanceSystem.technicians.find(t => t.id === task.executingTechnician);
+                
+                return `
+                    <div class="task-card">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">
+                                    ${getDeviceTypeText(task.deviceType)} - ${task.deviceModel}
+                                </h3>
+                                <p class="text-gray-600">المستفيد: ${task.beneficiaryName}</p>
+                                <p class="text-gray-600">رقم التواصل: ${task.contactNumber}</p>
+                            </div>
+                            <div class="text-left">
+                                <span class="px-3 py-1 rounded-full text-sm font-semibold ${getStatusClass(task.executionStatus)}">
+                                    ${getStatusText(task.executionStatus)}
+                                </span>
+                                <div class="text-sm text-gray-500 mt-2">
+                                    ${new Date(task.executionDateTime).toLocaleString('ar-SA')}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                            <div>
+                                <span class="font-semibold">الفني المستلم:</span>
+                                <div>${receivingTech ? receivingTech.name : 'غير محدد'}</div>
+                            </div>
+                            <div>
+                                <span class="font-semibold">الفني المنفذ:</span>
+                                <div>${executingTech ? executingTech.name : 'غير محدد'}</div>
+                            </div>
+                        </div>
+                        
+                        ${task.reason ? `
+                            <div class="mb-4 p-3 bg-yellow-50 rounded-lg">
+                                <span class="font-semibold text-yellow-800">السبب:</span>
+                                <div class="text-yellow-700">${task.reason}</div>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="flex justify-end">
+                            <button onclick="printCompletionForm('${task.id}')" class="btn-primary">
+                                🖨️ طباعة نموذج التسليم
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterCompletedTasks() {
+            renderCompletedTasks();
+        }
+
+        // User Management Functions
+        function handleUserSubmit(e) {
+            e.preventDefault();
+            
+            const specializations = Array.from(document.querySelectorAll('input[name="specializations"]:checked'))
+                .map(checkbox => checkbox.value);
+            
+            const userData = {
+                name: document.getElementById('user-name').value,
+                department: document.getElementById('user-department').value,
+                position: document.getElementById('user-position').value,
+                phone: document.getElementById('user-phone').value,
+                email: document.getElementById('user-email').value,
+                specializations: specializations
+            };
+            
+            MaintenanceSystem.addUser(userData);
+            
+            showNotification('تم إضافة المستخدم بنجاح!');
+            e.target.reset();
+            
+            renderUsersList();
+            populateTechniciansDropdowns();
+            populateAssignmentTechnicians();
+            updateReports();
+        }
+
+        function renderUsersList() {
+            const container = document.getElementById('users-list');
+            let users = MaintenanceSystem.users;
+            
+            // Apply filters
+            const departmentFilter = document.getElementById('department-filter').value;
+            const searchTerm = document.getElementById('search-users').value.toLowerCase();
+            
+            if (departmentFilter) {
+                users = users.filter(user => user.department === departmentFilter);
+            }
+            
+            if (searchTerm) {
+                users = users.filter(user => 
+                    user.name.toLowerCase().includes(searchTerm) ||
+                    user.phone.includes(searchTerm) ||
+                    (user.email && user.email.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="text-6xl mb-4">👥</div>
+                        <h3 class="text-2xl font-bold text-white mb-2">لا توجد مستخدمين</h3>
+                        <p class="text-white opacity-80">لم يتم إضافة أي مستخدمين بعد</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = users.map(user => `
+                <div class="user-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">${user.name}</h3>
+                            <div class="flex items-center space-x-2 space-x-reverse mb-2">
+                                <span class="department-badge dept-${user.department}">
+                                    ${getDepartmentText(user.department)}
+                                </span>
+                                <span class="text-gray-600">${getPositionText(user.position)}</span>
+                            </div>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-sm text-gray-500">
+                                ${new Date(user.createdAt).toLocaleDateString('ar-SA')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
+                        <div>
+                            <span class="font-semibold">الهاتف:</span>
+                            <div>${user.phone}</div>
+                        </div>
+                        <div>
+                            <span class="font-semibold">البريد الإلكتروني:</span>
+                            <div>${user.email || 'غير محدد'}</div>
+                        </div>
+                    </div>
+                    
+                    ${user.specializations && user.specializations.length > 0 ? `
+                        <div class="mb-4">
+                            <span class="font-semibold text-sm">التخصصات:</span>
+                            <div class="mt-2">
+                                ${user.specializations.map(spec => 
+                                    `<span class="specialization-badge">${getSpecializationText(spec)}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="flex justify-end space-x-2 space-x-reverse">
+                        <button onclick="editUser('${user.id}')" class="btn-secondary text-sm">
+                            تعديل
+                        </button>
+                        <button onclick="deleteUser('${user.id}')" class="btn-primary text-sm bg-red-600 hover:bg-red-700">
+                            حذف
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterUsers() {
+            renderUsersList();
+        }
+
+        function editUser(userId) {
+            const user = MaintenanceSystem.users.find(u => u.id === userId);
+            if (!user) return;
+            
+            // Populate form with user data
+            document.getElementById('user-name').value = user.name;
+            document.getElementById('user-department').value = user.department;
+            document.getElementById('user-position').value = user.position;
+            document.getElementById('user-phone').value = user.phone;
+            document.getElementById('user-email').value = user.email || '';
+            
+            // Set specializations
+            document.querySelectorAll('input[name="specializations"]').forEach(checkbox => {
+                checkbox.checked = user.specializations && user.specializations.includes(checkbox.value);
+            });
+            
+            // Change form to edit mode
+            const form = document.getElementById('user-form');
+            form.dataset.editId = userId;
+            form.querySelector('button[type="submit"]').textContent = '💾 تحديث المستخدم';
+        }
+
+        function deleteUser(userId) {
+            if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
+                MaintenanceSystem.deleteUser(userId);
+                showNotification('تم حذف المستخدم بنجاح!');
+                renderUsersList();
+                populateTechniciansDropdowns();
+                populateAssignmentTechnicians();
+                updateReports();
+            }
+        }
+
+        // Task Assignment Functions
+        function renderAssignmentTasks() {
+            const container = document.getElementById('assignment-tasks-list');
+            let tasks = MaintenanceSystem.getUnassignedTasks();
+            
+            // Apply priority filter
+            const priorityFilter = document.getElementById('task-priority-filter').value;
+            if (priorityFilter) {
+                tasks = tasks.filter(task => task.priority === priorityFilter);
+            }
+            
+            if (tasks.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-4xl mb-2">📋</div>
+                        <h3 class="text-lg font-bold text-white mb-2">لا توجد مهام للتخصيص</h3>
+                        <p class="text-white opacity-80 text-sm">جميع المهام مخصصة أو مكتملة</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = tasks.map(task => {
+                const receivingTech = MaintenanceSystem.technicians.find(t => t.id === task.receivingTechnician);
+                return `
+                    <div class="assignment-task-card" onclick="selectTaskForAssignment('${task.id}')">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-gray-800">${getDeviceTypeText(task.deviceType)} - ${task.deviceModel}</h4>
+                            <span class="location-badge location-${task.locationCode}">${task.locationCode}</span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-2">المستفيد: ${task.beneficiaryName}</p>
+                        <p class="text-gray-600 text-sm mb-2">القسم: ${task.department}</p>
+                        <div class="flex justify-between items-center text-xs text-gray-500">
+                            <span>الفني المستلم: ${receivingTech ? receivingTech.name : 'غير محدد'}</span>
+                            <span>${new Date(task.receiveDateTime).toLocaleDateString('ar-SA')}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectTaskForAssignment(taskId) {
+            // Remove previous selection
+            document.querySelectorAll('.assignment-task-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selection to clicked card
+            event.target.closest('.assignment-task-card').classList.add('selected');
+            
+            // Show task details
+            showTaskDetails(taskId);
+            
+            // Show assignment form
+            document.getElementById('assignment-form-container').classList.remove('hidden');
+            document.getElementById('assign-task-id').value = taskId;
+            
+            // Set default completion date (3 days from now)
+            const defaultDate = new Date();
+            defaultDate.setDate(defaultDate.getDate() + 3);
+            document.getElementById('expected-completion').value = defaultDate.toISOString().slice(0, 16);
+        }
+
+        function showTaskDetails(taskId) {
+            const task = MaintenanceSystem.tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            const receivingTech = MaintenanceSystem.technicians.find(t => t.id === task.receivingTechnician);
+            const container = document.getElementById('task-details-container');
+            
+            container.innerHTML = `
+                <div class="bg-white rounded-lg p-6">
+                    <h4 class="text-xl font-bold text-gray-800 mb-4">${getDeviceTypeText(task.deviceType)} - ${task.deviceModel}</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <span class="font-semibold">المستفيد:</span>
+                            <div>${task.beneficiaryName}</div>
+                        </div>
+                        <div>
+                            <span class="font-semibold">رقم المنسوب:</span>
+                            <div>${task.employeeNumber}</div>
+                        </div>
+                        <div>
+                            <span class="font-semibold">القسم:</span>
+                            <div>${task.department}</div>
+                        </div>
+                        <div>
+                            <span class="font-semibold">المقر:</span>
+                            <div><span class="location-badge location-${task.locationCode}">${task.locationCode}</span></div>
+                        </div>
+                        <div>
+                            <span class="font-semibold">رقم التواصل:</span>
+                            <div>${task.contactNumber}</div>
+                        </div>
+                        <div>
+                            <span class="font-semibold">نوع الاستخدام:</span>
+                            <div>${getUsageTypeText(task.usageType)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t pt-4">
+                        <h5 class="font-bold mb-2">المطلوب من الفني:</h5>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="font-semibold">الفورمات:</span> ${getFormatTypeText(task.formatType)}
+                            </div>
+                            <div>
+                                <span class="font-semibold">اللغة:</span> ${getLanguageText(task.language)}
+                            </div>
+                            <div>
+                                <span class="font-semibold">البيانات:</span> ${task.hasData === 'yes' ? 'يوجد بيانات' : 'لا يوجد بيانات'}
+                            </div>
+                            <div>
+                                <span class="font-semibold">الفني المستلم:</span> ${receivingTech ? receivingTech.name : 'غير محدد'}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t pt-4 mt-4">
+                        <div class="text-sm text-gray-600">
+                            <span class="font-semibold">تاريخ الاستلام:</span> ${new Date(task.receiveDateTime).toLocaleString('ar-SA')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function populateAssignmentTechnicians() {
+            const dropdown = document.getElementById('assigned-technician');
+            const allTechnicians = [...MaintenanceSystem.technicians, ...MaintenanceSystem.users];
+            
+            dropdown.innerHTML = '<option value="">اختر الفني</option>' +
+                allTechnicians.map(tech => 
+                    `<option value="${tech.id}">${tech.name} - ${tech.department || 'قسم غير محدد'}</option>`
+                ).join('');
+        }
+
+        function handleAssignmentSubmit(e) {
+            e.preventDefault();
+            
+            const taskId = document.getElementById('assign-task-id').value;
+            const assignmentData = {
+                assignedTechnician: document.getElementById('assigned-technician').value,
+                priority: document.getElementById('task-priority').value,
+                expectedCompletion: document.getElementById('expected-completion').value,
+                maintenanceType: document.getElementById('maintenance-type').value,
+                assignmentNotes: document.getElementById('assignment-notes').value
+            };
+            
+            MaintenanceSystem.assignTask(taskId, assignmentData);
+            
+            showNotification('تم إسناد المهمة بنجاح!');
+            
+            cancelAssignment();
+            renderAssignmentTasks();
+            renderPendingTasks();
+            updateReports();
+        }
+
+        function cancelAssignment() {
+            document.getElementById('assignment-form-container').classList.add('hidden');
+            document.getElementById('assignment-form').reset();
+            document.getElementById('task-details-container').innerHTML = `
+                <div class="text-center py-12">
+                    <div class="text-6xl mb-4">📋</div>
+                    <h3 class="text-xl font-bold text-white mb-2">اختر مهمة للتخصيص</h3>
+                    <p class="text-white opacity-80">حدد مهمة من القائمة لعرض تفاصيلها</p>
+                </div>
+            `;
+            
+            // Remove selection
+            document.querySelectorAll('.assignment-task-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+        }
+
+        function filterAssignmentTasks() {
+            renderAssignmentTasks();
+        }
+
+        function updateReports() {
+            const totalReceived = MaintenanceSystem.tasks.length;
+            const totalPending = MaintenanceSystem.getPendingTasks().length;
+            const totalCompleted = MaintenanceSystem.getCompletedTasks().length;
+            const totalTechnicians = MaintenanceSystem.technicians.length;
+            
+            document.getElementById('total-received').textContent = totalReceived;
+            document.getElementById('total-pending').textContent = totalPending;
+            document.getElementById('total-completed').textContent = totalCompleted;
+            document.getElementById('total-technicians').textContent = totalTechnicians;
+            
+            // Device distribution
+            const deviceCounts = {};
+            MaintenanceSystem.tasks.forEach(task => {
+                deviceCounts[task.deviceType] = (deviceCounts[task.deviceType] || 0) + 1;
+            });
+            
+            const deviceContainer = document.getElementById('device-distribution');
+            deviceContainer.innerHTML = Object.entries(deviceCounts).map(([type, count]) => `
+                <div class="flex justify-between items-center text-white">
+                    <span>${getDeviceTypeText(type)}</span>
+                    <span class="font-bold">${count}</span>
+                </div>
+            `).join('');
+            
+            // Location distribution
+            const locationCounts = {};
+            MaintenanceSystem.tasks.forEach(task => {
+                locationCounts[task.locationCode] = (locationCounts[task.locationCode] || 0) + 1;
+            });
+            
+            const locationContainer = document.getElementById('location-distribution');
+            locationContainer.innerHTML = Object.entries(locationCounts).map(([code, count]) => `
+                <div class="flex justify-between items-center text-white">
+                    <span class="location-badge location-${code}">${code}</span>
+                    <span class="font-bold">${count}</span>
+                </div>
+            `).join('');
+        }
+
+        // Signature Management
+        function setupSignatureCanvas() {
+            signatureCanvas = document.getElementById('signature-canvas');
+            signatureCtx = signatureCanvas.getContext('2d');
+            
+            signatureCanvas.addEventListener('mousedown', startDrawing);
+            signatureCanvas.addEventListener('mousemove', draw);
+            signatureCanvas.addEventListener('mouseup', stopDrawing);
+            signatureCanvas.addEventListener('mouseout', stopDrawing);
+            
+            // Touch events for mobile
+            signatureCanvas.addEventListener('touchstart', handleTouch);
+            signatureCanvas.addEventListener('touchmove', handleTouch);
+            signatureCanvas.addEventListener('touchend', stopDrawing);
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = signatureCanvas.getBoundingClientRect();
+            signatureCtx.beginPath();
+            signatureCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const rect = signatureCanvas.getBoundingClientRect();
+            signatureCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+            signatureCtx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 
+                                           e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            signatureCanvas.dispatchEvent(mouseEvent);
+        }
+
+        function openSignatureModal() {
+            document.getElementById('signature-modal').classList.remove('hidden');
+            document.getElementById('signature-modal').classList.add('flex');
+        }
+
+        function closeSignatureModal() {
+            document.getElementById('signature-modal').classList.add('hidden');
+            document.getElementById('signature-modal').classList.remove('flex');
+            clearSignature();
+            document.getElementById('signature-name').value = '';
+        }
+
+        function clearSignature() {
+            signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+        }
+
+        function saveSignature() {
+            const name = document.getElementById('signature-name').value.trim();
+            if (!name) {
+                alert('يرجى إدخال اسم الفني');
+                return;
+            }
+            
+            const signatureData = signatureCanvas.toDataURL();
+            MaintenanceSystem.signatures[name] = signatureData;
+            MaintenanceSystem.saveData();
+            
+            populateSignaturesDropdowns();
+            closeSignatureModal();
+            showNotification('تم حفظ التوقيع بنجاح!');
+        }
+
+        // Print Functions
+        function printReceptionForm() {
+            const formData = getReceptionFormData();
+            if (!validateReceptionForm(formData)) {
+                alert('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            const printContent = generateReceptionPrintContent(formData);
+            document.getElementById('print-area').innerHTML = printContent;
+            document.getElementById('print-area').classList.remove('hidden');
+            
+            setTimeout(() => {
+                window.print();
+                document.getElementById('print-area').classList.add('hidden');
+            }, 100);
+        }
+
+        function printTaskDetails(taskId) {
+            const task = MaintenanceSystem.tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            const printContent = generateTaskPrintContent(task);
+            document.getElementById('print-area').innerHTML = printContent;
+            document.getElementById('print-area').classList.remove('hidden');
+            
+            setTimeout(() => {
+                window.print();
+                document.getElementById('print-area').classList.add('hidden');
+            }, 100);
+        }
+
+        function printCompletionForm(taskId) {
+            const task = MaintenanceSystem.tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            const printContent = generateCompletionPrintContent(task);
+            document.getElementById('print-area').innerHTML = printContent;
+            document.getElementById('print-area').classList.remove('hidden');
+            
+            setTimeout(() => {
+                window.print();
+                document.getElementById('print-area').classList.add('hidden');
+            }, 100);
+        }
+
+        function getReceptionFormData() {
+            const hasDataRadio = document.querySelector('input[name="has-data"]:checked');
+            return {
+                deviceType: document.getElementById('device-type').value,
+                usageType: document.getElementById('usage-type').value,
+                deviceModel: document.getElementById('device-model').value,
+                receivingTechnician: document.getElementById('receiving-technician').value,
+                receiveDateTime: document.getElementById('receive-datetime').value,
+                formatType: document.getElementById('format-type').value,
+                language: document.getElementById('language').value,
+                hasData: hasDataRadio ? hasDataRadio.value : '',
+                technicianSignature: document.getElementById('technician-signature').value,
+                beneficiaryName: document.getElementById('beneficiary-name').value,
+                employeeNumber: document.getElementById('employee-number').value,
+                department: document.getElementById('department').value,
+                locationCode: document.getElementById('location-code').value,
+                contactNumber: document.getElementById('contact-number').value
+            };
+        }
+
+        function validateReceptionForm(data) {
+            const required = ['deviceType', 'usageType', 'deviceModel', 'receivingTechnician', 
+                            'beneficiaryName', 'employeeNumber', 'department', 'locationCode', 'contactNumber'];
+            return required.every(field => data[field] && data[field].trim() !== '');
+        }
+
+        function generateReceptionPrintContent(data) {
+            const technician = MaintenanceSystem.technicians.find(t => t.id === data.receivingTechnician);
+            const signature = MaintenanceSystem.signatures[data.technicianSignature];
+            
+            return `
+                <div style="font-family: 'Tajawal', sans-serif; direction: rtl; padding: 40px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #B8860B; font-size: 28px; margin-bottom: 10px;">نموذج استلام جهاز</h1>
+                        <h2 style="color: #556B2F; font-size: 20px;">قسم تقنية المعلومات - الصيانة والدعم الفني</h2>
+                    </div>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold; width: 30%;">نوع الجهاز</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${getDeviceTypeText(data.deviceType)}</td>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold; width: 30%;">الطراز</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${data.deviceModel}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">نوع الاستخدام</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${getUsageTypeText(data.usageType)}</td>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">تاريخ الاستلام</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${new Date(data.receiveDateTime).toLocaleString('ar-SA')}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">الفني المستلم</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;" colspan="3">${technician ? technician.name : 'غير محدد'}</td>
+                        </tr>
+                    </table>
+                    
+                    <h3 style="color: #B8860B; margin-bottom: 15px;">بيانات المستفيد</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold; width: 25%;">الاسم</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${data.beneficiaryName}</td>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold; width: 25%;">رقم المنسوب</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${data.employeeNumber}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">القسم</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${data.department}</td>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">المقر</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${data.locationCode}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">رقم التواصل</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;" colspan="3">${data.contactNumber}</td>
+                        </tr>
+                    </table>
+                    
+                    <h3 style="color: #B8860B; margin-bottom: 15px;">المطلوب من الفني</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold; width: 25%;">الفورمات</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${getFormatTypeText(data.formatType)}</td>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold; width: 25%;">اللغة</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${getLanguageText(data.language)}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">البيانات</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;" colspan="3">${data.hasData === 'yes' ? 'يوجد بيانات مهمة' : 'لا يوجد بيانات'}</td>
+                        </tr>
+                    </table>
+                    
+                    <div style="margin-top: 50px;">
+                        <div style="display: inline-block; width: 45%; text-align: center;">
+                            <div style="border-bottom: 1px solid #000; margin-bottom: 10px; height: 60px;">
+                                ${signature ? `<img src="${signature}" style="max-height: 50px;">` : ''}
+                            </div>
+                            <p>توقيع الفني المستلم</p>
+                        </div>
+                        <div style="display: inline-block; width: 45%; text-align: center; float: left;">
+                            <div style="border-bottom: 1px solid #000; margin-bottom: 10px; height: 60px;"></div>
+                            <p>توقيع المستفيد</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateTaskPrintContent(task) {
+            const receivingTech = MaintenanceSystem.technicians.find(t => t.id === task.receivingTechnician);
+            
+            return `
+                <div style="font-family: 'Tajawal', sans-serif; direction: rtl; padding: 40px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #B8860B; font-size: 28px; margin-bottom: 10px;">تفاصيل المهمة</h1>
+                        <h2 style="color: #556B2F; font-size: 20px;">قسم تقنية المعلومات</h2>
+                    </div>
+                    
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">نوع الجهاز</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${getDeviceTypeText(task.deviceType)} - ${task.deviceModel}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">المستفيد</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${task.beneficiaryName} (${task.employeeNumber})</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">القسم</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${task.department}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">المقر</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${task.locationCode}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">الفني المستلم</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${receivingTech ? receivingTech.name : 'غير محدد'}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">تاريخ الاستلام</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${new Date(task.receiveDateTime).toLocaleString('ar-SA')}</td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+        }
+
+        function generateCompletionPrintContent(task) {
+            const receivingTech = MaintenanceSystem.technicians.find(t => t.id === task.receivingTechnician);
+            const executingTech = MaintenanceSystem.technicians.find(t => t.id === task.executingTechnician);
+            const signature = MaintenanceSystem.signatures[task.executionSignature];
+            
+            return `
+                <div style="font-family: 'Tajawal', sans-serif; direction: rtl; padding: 40px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #B8860B; font-size: 28px; margin-bottom: 10px;">نموذج تسليم جهاز</h1>
+                        <h2 style="color: #556B2F; font-size: 20px;">قسم تقنية المعلومات</h2>
+                    </div>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">المستفيد</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${task.beneficiaryName}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">نوع الجهاز</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${getDeviceTypeText(task.deviceType)} - ${task.deviceModel}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">رقم التواصل</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${task.contactNumber}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">الحالة</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${getStatusText(task.executionStatus)}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">الفني المنفذ</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${executingTech ? executingTech.name : 'غير محدد'}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px; background: #f9f9f9; font-weight: bold;">تاريخ التسليم</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${new Date(task.executionDateTime).toLocaleString('ar-SA')}</td>
+                        </tr>
+                    </table>
+                    
+                    <div style="margin-top: 50px;">
+                        <div style="display: inline-block; width: 45%; text-align: center;">
+                            <div style="border-bottom: 1px solid #000; margin-bottom: 10px; height: 60px;">
+                                ${signature ? `<img src="${signature}" style="max-height: 50px;">` : ''}
+                            </div>
+                            <p>توقيع الفني المسلم</p>
+                        </div>
+                        <div style="display: inline-block; width: 45%; text-align: center; float: left;">
+                            <div style="border-bottom: 1px solid #000; margin-bottom: 10px; height: 60px;"></div>
+                            <p>توقيع المستلم</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Utility Functions
+        function getDeviceTypeText(type) {
+            const types = {
+                'computer': 'حاسب آلي',
+                'printer': 'طابعة',
+                'scanner': 'ماسح ضوئي'
+            };
+            return types[type] || type;
+        }
+
+        function getUsageTypeText(type) {
+            const types = {
+                'private': 'خاص',
+                'lab': 'معمل'
+            };
+            return types[type] || type;
+        }
+
+        function getFormatTypeText(type) {
+            const types = {
+                'full': 'فورمات كامل',
+                'quick': 'فورمات سريع',
+                'none': 'بدون فورمات'
+            };
+            return types[type] || 'غير محدد';
+        }
+
+        function getLanguageText(lang) {
+            const languages = {
+                'arabic': 'عربي',
+                'english': 'إنجليزي',
+                'both': 'عربي + إنجليزي'
+            };
+            return languages[lang] || 'غير محدد';
+        }
+
+        function getStatusText(status) {
+            const statuses = {
+                'ready': 'جاهز',
+                'waiting': 'في الانتظار',
+                'contact': 'التواصل مع المستفيد'
+            };
+            return statuses[status] || status;
+        }
+
+        function getStatusClass(status) {
+            const classes = {
+                'ready': 'status-ready',
+                'waiting': 'status-waiting',
+                'contact': 'status-contact'
+            };
+            return classes[status] || '';
+        }
+
+        function getDepartmentText(dept) {
+            const departments = {
+                'maintenance': 'الصيانة',
+                'technical-support': 'الدعم الفني',
+                'network': 'الشبكات',
+                'systems': 'الأنظمة',
+                'admin': 'الإدارة'
+            };
+            return departments[dept] || dept;
+        }
+
+        function getPositionText(position) {
+            const positions = {
+                'technician': 'فني',
+                'senior-technician': 'فني أول',
+                'supervisor': 'مشرف',
+                'manager': 'مدير'
+            };
+            return positions[position] || position;
+        }
+
+        function getSpecializationText(spec) {
+            const specializations = {
+                'hardware': 'صيانة الأجهزة',
+                'software': 'البرمجيات',
+                'network': 'الشبكات',
+                'printers': 'الطابعات'
+            };
+            return specializations[spec] || spec;
+        }
+
+        function getPriorityText(priority) {
+            const priorities = {
+                'high': 'عالية',
+                'medium': 'متوسطة',
+                'low': 'منخفضة'
+            };
+            return priorities[priority] || priority;
+        }
+
+        function getMaintenanceTypeText(type) {
+            const types = {
+                'preventive': 'صيانة وقائية',
+                'corrective': 'صيانة إصلاحية',
+                'emergency': 'صيانة طارئة',
+                'upgrade': 'ترقية'
+            };
+            return types[type] || type;
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'signature-modal') {
+                closeSignatureModal();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98612129e1ad2cee',t:'MTc1OTA0MDM3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
